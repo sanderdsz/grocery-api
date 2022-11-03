@@ -1,8 +1,9 @@
-package com.sanderdsz.grocery.domain.models;
+package com.sanderdsz.grocery.domain.model;
 
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -28,11 +29,11 @@ public class User {
     private String password;
 
     @Column
-    private Boolean isAdmin;
+    private String role;
 
     @Column
-    private Date created_at;
+    private LocalDateTime created_at;
 
     @Column
-    private Date updated_at;
+    private LocalDateTime updated_at;
 }
