@@ -19,7 +19,7 @@ public class UserController {
         return userService.listAll();
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public User save(
             @RequestBody
             User user
