@@ -43,8 +43,8 @@ public class SecurityConfiguration {
     }
 
     /**
-     * We need to provide a method for encription to Spring Security.
-     * @return encription password with BCrypt
+     * We need to provide a method for encryption to Spring Security.
+     * @return encryption password with BCrypt
      */
     @Bean
     PasswordEncoder passwordEncoder() {
