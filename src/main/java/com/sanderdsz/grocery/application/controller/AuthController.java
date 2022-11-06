@@ -5,10 +5,7 @@ import com.sanderdsz.grocery.domain.dto.TokenDTO;
 import com.sanderdsz.grocery.infrastructure.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,6 +13,11 @@ public class AuthController {
 
     @Autowired
    AuthService authService;
+
+    @GetMapping("/alive")
+    public ResponseEntity<?> alive() {
+        return ResponseEntity.ok("Alive!");
+    };
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(

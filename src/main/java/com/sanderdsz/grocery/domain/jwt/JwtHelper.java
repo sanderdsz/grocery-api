@@ -83,7 +83,7 @@ public class JwtHelper {
         try {
             return Optional.of(accessTokenVerifier.verify(token));
         } catch (JWTVerificationException e) {
-            log.error("invalid access token", e);
+            log.error("invalid access token: ", e.getMessage());
         }
 
         return Optional.empty();

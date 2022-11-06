@@ -1,6 +1,5 @@
 package com.sanderdsz.grocery.infrastructure.service;
 
-import com.sanderdsz.grocery.domain.model.SecurityUser;
 import com.sanderdsz.grocery.domain.model.User;
 import com.sanderdsz.grocery.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +22,22 @@ public class UserService implements UserDetailsService {
 
     private PasswordEncoder passwordEncoder;
 
-    public List<User> listAll() {
-        return userRepository.findAll();
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         return userRepository
                 .findByEmail(username)
-                .map(SecurityUser::new)
                 .orElseThrow(() -> new UsernameNotFoundException("E-mail not found: " + username));
+    }
+
+    public User findById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+        }
+
+        return user.get();
     }
 
     public User save(User user) {

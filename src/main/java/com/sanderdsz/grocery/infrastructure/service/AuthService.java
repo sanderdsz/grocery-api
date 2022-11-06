@@ -32,6 +32,11 @@ public class AuthService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    /**
+     * Saves the user and creates a refresh token
+     * @param dto
+     * @return TokenDTO (user e-mail, refreshToken)
+     */
     public TokenDTO save(SignupDTO dto) {
 
         User user = User.builder()
@@ -57,7 +62,9 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
-        return new TokenDTO(user.getEmail(), refreshTokenString);
+        String accessTokenString = jwtHelper.generateAccessToken(user);
+
+        return new TokenDTO(user.getEmail(), refreshTokenString, accessTokenString);
     }
 
 }
