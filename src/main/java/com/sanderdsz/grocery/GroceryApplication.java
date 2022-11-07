@@ -15,23 +15,5 @@ public class GroceryApplication {
 
 	public static void main(String[] args) { SpringApplication.run(GroceryApplication.class, args); }
 
-	@Bean
-	CommandLineRunner commandLineRunner(
-			UserRepository users,
-			PasswordEncoder passwordEncoder,
-			RefreshTokenRepository tokens
-	) {
-		return args -> {
-			users.save(
-					User.builder()
-							.name("Sander")
-							.password(passwordEncoder.encode("1234"))
-							.email("sanderdsz@gmail.com")
-							.role("ADMIN")
-					.build()
-			);
-		};
-	}
-
 }
 
