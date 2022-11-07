@@ -46,31 +46,39 @@ public class AuthService {
      */
     public TokenDTO save(SignupDTO dto) {
 
-        User user = User.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role("ADMIN")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        Optional<User> userExists = userRepository.findByEmail(dto.getEmail());
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
-                .createdAt(LocalDateTime.now())
-                .build();
+        if (userExists.isEmpty()) {
 
-        userRepository.save(user);
+            User user = User.builder()
+                    .name(dto.getName())
+                    .email(dto.getEmail())
+                    .password(passwordEncoder.encode(dto.getPassword()))
+                    .role("ADMIN")
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
 
-        refreshTokenRepository.save(refreshToken);
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .user(user)
+                    .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
+                    .createdAt(LocalDateTime.now())
+                    .build();
 
-        String refreshTokenString = jwtHelper.generateRefreshToken(user, refreshToken);
+            userRepository.save(user);
 
-        String accessTokenString = jwtHelper.generateAccessToken(user);
+            refreshTokenRepository.save(refreshToken);
 
-        return new TokenDTO(user.getEmail(), refreshTokenString, accessTokenString);
+            String refreshTokenString = jwtHelper.generateRefreshToken(user, refreshToken);
 
+            String accessTokenString = jwtHelper.generateAccessToken(user);
+
+            return new TokenDTO(user.getEmail(), refreshTokenString, accessTokenString);
+
+        } else {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-mail already registered");
+        }
     }
 
     public TokenDTO login(LoginDTO dto) {
