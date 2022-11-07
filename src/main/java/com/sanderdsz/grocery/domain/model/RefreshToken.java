@@ -24,8 +24,6 @@ public class RefreshToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String refreshToken;
-
     private LocalDateTime expiresDate;
 
     private LocalDateTime createdAt;

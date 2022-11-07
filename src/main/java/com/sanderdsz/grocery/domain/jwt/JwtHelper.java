@@ -85,8 +85,7 @@ public class JwtHelper {
         } catch (JWTVerificationException e) {
             log.error("invalid access token: ", e.getMessage());
         }
-
-        return Optional.empty();
+        return null;
     }
 
     private Optional<DecodedJWT> decodeRefreshToken(String token) {
@@ -96,8 +95,7 @@ public class JwtHelper {
         } catch (JWTVerificationException e) {
             log.error("invalid refresh token", e);
         }
-
-        return Optional.empty();
+        return null;
     }
 
     public boolean validateAccessToken(String token) {
@@ -120,8 +118,8 @@ public class JwtHelper {
         return decodeRefreshToken(token).get().getSubject();
     }
 
-    public String getTokenIdFromRefreshToken(String token) {
+    public Long getTokenIdFromRefreshToken(String token) {
 
-        return decodeRefreshToken(token).get().getClaim("tokenId").asString();
+        return decodeRefreshToken(token).get().getClaim("tokenId").asLong();
     }
 }

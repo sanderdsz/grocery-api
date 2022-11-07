@@ -1,5 +1,6 @@
 package com.sanderdsz.grocery.application.controller;
 
+import antlr.Token;
 import com.sanderdsz.grocery.domain.dto.LoginDTO;
 import com.sanderdsz.grocery.domain.dto.SignupDTO;
 import com.sanderdsz.grocery.domain.dto.TokenDTO;
@@ -35,6 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Transactional
     public ResponseEntity<?> login(
             @RequestBody
             LoginDTO dto
@@ -44,4 +46,17 @@ public class AuthController {
 
         return ResponseEntity.ok(tokenDTO);
     }
+
+    @PostMapping("/logout")
+    @Transactional
+    public ResponseEntity<?> logout(
+            @RequestBody
+            TokenDTO dto
+    ) {
+
+        authService.logout(dto);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

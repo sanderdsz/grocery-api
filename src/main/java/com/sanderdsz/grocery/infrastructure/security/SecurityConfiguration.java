@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                 .authorizeRequests(auth -> {
                     auth.antMatchers("/auth/signup").permitAll();
                     auth.antMatchers("/auth/login").permitAll();
+                    auth.antMatchers("/auth/logout").permitAll();
                     auth.antMatchers("/auth/alive").authenticated();
                 })
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

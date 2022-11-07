@@ -8,9 +8,11 @@ import com.sanderdsz.grocery.domain.model.RefreshToken;
 import com.sanderdsz.grocery.domain.model.User;
 import com.sanderdsz.grocery.domain.repository.RefreshTokenRepository;
 import com.sanderdsz.grocery.domain.repository.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Log4j2
 @Service
 public class AuthService {
 
@@ -58,17 +61,16 @@ public class AuthService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        String refreshTokenString = jwtHelper.generateRefreshToken(user, refreshToken);
-
-        refreshToken.setRefreshToken(refreshTokenString);
-
         userRepository.save(user);
 
         refreshTokenRepository.save(refreshToken);
 
+        String refreshTokenString = jwtHelper.generateRefreshToken(user, refreshToken);
+
         String accessTokenString = jwtHelper.generateAccessToken(user);
 
         return new TokenDTO(user.getEmail(), refreshTokenString, accessTokenString);
+
     }
 
     public TokenDTO login(LoginDTO dto) {
@@ -85,11 +87,9 @@ public class AuthService {
                             .createdAt(LocalDateTime.now())
                             .build();
 
-            String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
-
-            refreshToken.setRefreshToken(refreshTokenString);
-
             refreshTokenRepository.save(refreshToken);
+
+            String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
 
             return new TokenDTO(user.get().getEmail(), refreshTokenString, accessToken);
 
@@ -98,6 +98,34 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         }
 
+    }
+
+    public void logout(TokenDTO dto) {
+
+        String refreshTokenString = dto.getRefreshToken();
+
+        boolean isValid = jwtHelper.validateRefreshToken(dto.getRefreshToken());
+
+        log.info("isValid: ", isValid);
+
+        Long tokenId = jwtHelper.getTokenIdFromRefreshToken(refreshTokenString);
+
+        log.info("tokenId: ", tokenId);
+
+        Long refreshTokenId = jwtHelper.getTokenIdFromRefreshToken(refreshTokenString);
+
+        if (jwtHelper.validateRefreshToken(refreshTokenString) &&
+            refreshTokenRepository.existsById(refreshTokenId)
+        ) {
+
+            Long userId = Long.parseLong(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
+
+            refreshTokenRepository.deleteByUser_Id(userId);
+
+        } else {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token");
+        }
     }
 
 }
