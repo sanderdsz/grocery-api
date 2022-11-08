@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 
 @Log4j2
@@ -89,22 +91,30 @@ public class AuthService {
 
         Optional<User> user = userRepository.findByEmail(dto.getEmail());
 
-        if (user.isPresent()) {
+        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findTopByUser_IdOrderByCreatedAtDesc(user.get().getId());
+
+        if (user.isPresent() && refreshTokenOptional.get().getExpiresDate().isAfter(LocalDateTime.now())) {
+
+            String accessToken = jwtHelper.generateAccessToken(user.get());
+
+            return new TokenDTO(user.get().getEmail(), refreshTokenOptional.get().getRefreshToken(), accessToken);
+
+        } if (user.isPresent()) {
 
             String accessToken = jwtHelper.generateAccessToken(user.get());
 
             RefreshToken refreshToken = RefreshToken.builder()
-                            .id(UUID.randomUUID())
-                            .user(user.get())
-                            .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
-                            .createdAt(LocalDateTime.now())
-                            .build();
-
-            refreshTokenRepository.save(refreshToken);
+                    .id(UUID.randomUUID())
+                    .user(user.get())
+                    .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
+                    .createdAt(LocalDateTime.now())
+                    .build();
 
             String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
 
             refreshToken.setRefreshToken(refreshTokenString);
+
+            refreshTokenRepository.save(refreshToken);
 
             return new TokenDTO(user.get().getEmail(), refreshTokenString, accessToken);
 
