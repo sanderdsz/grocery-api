@@ -72,7 +72,7 @@ public class JwtHelper {
         return JWT.create()
                 .withIssuer(issuer)
                 .withSubject(String.valueOf(user.getId()))
-                .withClaim("tokenId", refreshToken.getId())
+                .withClaim("tokenId", refreshToken.getId().toString())
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(new Date().getTime() + refreshTokenExpirationMs))
                 .sign(refreshTokenAlgorithm);

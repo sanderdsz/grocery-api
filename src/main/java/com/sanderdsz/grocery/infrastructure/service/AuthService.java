@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -60,6 +61,7 @@ public class AuthService {
                     .build();
 
             RefreshToken refreshToken = RefreshToken.builder()
+                    .id(UUID.randomUUID())
                     .user(user)
                     .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
                     .createdAt(LocalDateTime.now())
@@ -67,9 +69,11 @@ public class AuthService {
 
             userRepository.save(user);
 
-            refreshTokenRepository.save(refreshToken);
-
             String refreshTokenString = jwtHelper.generateRefreshToken(user, refreshToken);
+
+            refreshToken.setRefreshToken(refreshTokenString);
+
+            refreshTokenRepository.save(refreshToken);
 
             String accessTokenString = jwtHelper.generateAccessToken(user);
 
@@ -90,6 +94,7 @@ public class AuthService {
             String accessToken = jwtHelper.generateAccessToken(user.get());
 
             RefreshToken refreshToken = RefreshToken.builder()
+                            .id(UUID.randomUUID())
                             .user(user.get())
                             .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
                             .createdAt(LocalDateTime.now())
@@ -98,6 +103,8 @@ public class AuthService {
             refreshTokenRepository.save(refreshToken);
 
             String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
+
+            refreshToken.setRefreshToken(refreshTokenString);
 
             return new TokenDTO(user.get().getEmail(), refreshTokenString, accessToken);
 
