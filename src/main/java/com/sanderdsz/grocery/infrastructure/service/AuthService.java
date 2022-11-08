@@ -43,9 +43,9 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
 
     /**
-     * Saves the user and creates a refresh token
+     * Saves the user and creates a refresh token if the user isn't already registered
      * @param dto
-     * @return TokenDTO (user e-mail, refreshToken)
+     * @return TokenDTO (user e-mail, refreshToken and accessToken)
      */
     public TokenDTO save(SignupDTO dto) {
 
@@ -87,6 +87,12 @@ public class AuthService {
         }
     }
 
+    /**
+     * Checks if the user is already logged (valid refresh token),
+     * then creates a new access token and refresh token if need it.
+     * @param dto
+     * @return TokenDTO (user e-mail, refreshToken and accessToken)
+     */
     public TokenDTO login(LoginDTO dto) {
 
         Optional<User> user = userRepository.findByEmail(dto.getEmail());
@@ -125,17 +131,13 @@ public class AuthService {
 
     }
 
+    /**
+     * Removes all refresh tokens entries from database from the particular user
+     * @param dto
+     */
     public void logout(TokenDTO dto) {
 
         String refreshTokenString = dto.getRefreshToken();
-
-        boolean isValid = jwtHelper.validateRefreshToken(dto.getRefreshToken());
-
-        log.info("isValid: ", isValid);
-
-        Long tokenId = jwtHelper.getTokenIdFromRefreshToken(refreshTokenString);
-
-        log.info("tokenId: ", tokenId);
 
         Long refreshTokenId = jwtHelper.getTokenIdFromRefreshToken(refreshTokenString);
 
