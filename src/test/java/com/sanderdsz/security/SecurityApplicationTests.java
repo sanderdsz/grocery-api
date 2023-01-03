@@ -1,10 +1,10 @@
-package com.sanderdsz.grocery;
+package com.sanderdsz.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GroceryApplicationTests {
+class SecurityApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,12 +1,12 @@
-package com.sanderdsz.grocery.domain.jwt;
+package com.sanderdsz.security.domain.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.sanderdsz.grocery.domain.model.RefreshToken;
-import com.sanderdsz.grocery.domain.model.User;
+import com.sanderdsz.security.domain.model.RefreshToken;
+import com.sanderdsz.security.domain.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

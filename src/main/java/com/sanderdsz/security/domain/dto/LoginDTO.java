@@ -1,4 +1,4 @@
-package com.sanderdsz.grocery.domain.dto;
+package com.sanderdsz.security.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;

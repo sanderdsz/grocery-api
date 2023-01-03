@@ -1,10 +1,10 @@
-package com.sanderdsz.grocery.application.controller;
+package com.sanderdsz.security.application.controller;
 
-import antlr.Token;
-import com.sanderdsz.grocery.domain.dto.LoginDTO;
-import com.sanderdsz.grocery.domain.dto.SignupDTO;
-import com.sanderdsz.grocery.domain.dto.TokenDTO;
-import com.sanderdsz.grocery.infrastructure.service.AuthService;
+import com.sanderdsz.security.domain.dto.LoginDTO;
+import com.sanderdsz.security.domain.dto.PasswordRecoveryDTO;
+import com.sanderdsz.security.domain.dto.SignupDTO;
+import com.sanderdsz.security.domain.dto.TokenDTO;
+import com.sanderdsz.security.infrastructure.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +55,17 @@ public class AuthController {
     ) {
 
         authService.logout(dto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset")
+    @Transactional
+    public ResponseEntity<?> reset(
+            @RequestBody
+            PasswordRecoveryDTO dto
+    ) {
+        authService.reset(dto);
 
         return ResponseEntity.ok().build();
     }

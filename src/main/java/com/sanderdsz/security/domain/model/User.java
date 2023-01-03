@@ -1,4 +1,4 @@
-package com.sanderdsz.grocery.domain.model;
+package com.sanderdsz.security.domain.model;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

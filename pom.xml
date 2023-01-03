@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sanderdsz</groupId>
-	<artifactId>grocery</artifactId>
+	<artifactId>security</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>grocery</name>
-	<description>Grocery</description>
+	<description>Security</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -60,6 +60,12 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>3.19.1</version>
+		</dependency>
+
+		<!-- Mail Service -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
 		<!-- Testing -->

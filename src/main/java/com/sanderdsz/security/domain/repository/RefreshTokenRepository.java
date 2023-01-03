@@ -1,6 +1,6 @@
-package com.sanderdsz.grocery.domain.repository;
+package com.sanderdsz.security.domain.repository;
 
-import com.sanderdsz.grocery.domain.model.RefreshToken;
+import com.sanderdsz.security.domain.model.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

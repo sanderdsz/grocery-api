@@ -1,6 +1,6 @@
-package com.sanderdsz.grocery.domain.repository;
+package com.sanderdsz.security.domain.repository;
 
-import com.sanderdsz.grocery.domain.model.User;
+import com.sanderdsz.security.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

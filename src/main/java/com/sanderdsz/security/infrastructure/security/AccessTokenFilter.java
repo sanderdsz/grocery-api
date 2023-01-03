@@ -1,8 +1,8 @@
-package com.sanderdsz.grocery.infrastructure.security;
+package com.sanderdsz.security.infrastructure.security;
 
-import com.sanderdsz.grocery.domain.jwt.JwtHelper;
-import com.sanderdsz.grocery.domain.model.User;
-import com.sanderdsz.grocery.infrastructure.service.UserService;
+import com.sanderdsz.security.domain.jwt.JwtHelper;
+import com.sanderdsz.security.domain.model.User;
+import com.sanderdsz.security.infrastructure.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,7 +55,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(passwordAuthenticationToken);
             }
         } catch (Exception e) {
-            log.error("Cannot authenticate: ", e);
+            log.error("Cannot authenticate: ", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

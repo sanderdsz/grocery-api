@@ -1,26 +1,24 @@
-package com.sanderdsz.grocery.infrastructure.service;
+package com.sanderdsz.security.infrastructure.service;
 
-import com.sanderdsz.grocery.domain.dto.LoginDTO;
-import com.sanderdsz.grocery.domain.dto.SignupDTO;
-import com.sanderdsz.grocery.domain.dto.TokenDTO;
-import com.sanderdsz.grocery.domain.jwt.JwtHelper;
-import com.sanderdsz.grocery.domain.model.RefreshToken;
-import com.sanderdsz.grocery.domain.model.User;
-import com.sanderdsz.grocery.domain.repository.RefreshTokenRepository;
-import com.sanderdsz.grocery.domain.repository.UserRepository;
+import com.sanderdsz.security.domain.dto.LoginDTO;
+import com.sanderdsz.security.domain.dto.PasswordRecoveryDTO;
+import com.sanderdsz.security.domain.dto.SignupDTO;
+import com.sanderdsz.security.domain.dto.TokenDTO;
+import com.sanderdsz.security.domain.jwt.JwtHelper;
+import com.sanderdsz.security.domain.model.RefreshToken;
+import com.sanderdsz.security.domain.model.User;
+import com.sanderdsz.security.domain.repository.RefreshTokenRepository;
+import com.sanderdsz.security.domain.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.UUID;
 
 @Log4j2
@@ -99,34 +97,37 @@ public class AuthService {
 
         Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findTopByUser_IdOrderByCreatedAtDesc(user.get().getId());
 
-        if (user.isPresent() && refreshTokenOptional.get().getExpiresDate().isAfter(LocalDateTime.now())) {
+        if (user.isPresent() && passwordEncoder.matches(dto.getPassword(), user.get().getPassword())) {
 
-            String accessToken = jwtHelper.generateAccessToken(user.get());
+            if (refreshTokenOptional.get().getExpiresDate().isAfter(LocalDateTime.now())) {
 
-            return new TokenDTO(user.get().getEmail(), refreshTokenOptional.get().getRefreshToken(), accessToken);
+                String accessToken = jwtHelper.generateAccessToken(user.get());
 
-        } if (user.isPresent()) {
+                return new TokenDTO(user.get().getEmail(), refreshTokenOptional.get().getRefreshToken(), accessToken);
 
-            String accessToken = jwtHelper.generateAccessToken(user.get());
+            } else {
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .id(UUID.randomUUID())
-                    .user(user.get())
-                    .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
-                    .createdAt(LocalDateTime.now())
-                    .build();
+                String accessToken = jwtHelper.generateAccessToken(user.get());
 
-            String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
+                RefreshToken refreshToken = RefreshToken.builder()
+                        .id(UUID.randomUUID())
+                        .user(user.get())
+                        .expiresDate(LocalDateTime.now().plusSeconds(refreshTokenExpirationSeconds))
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
-            refreshToken.setRefreshToken(refreshTokenString);
+                String refreshTokenString = jwtHelper.generateRefreshToken(user.get(), refreshToken);
 
-            refreshTokenRepository.save(refreshToken);
+                refreshToken.setRefreshToken(refreshTokenString);
 
-            return new TokenDTO(user.get().getEmail(), refreshTokenString, accessToken);
+                refreshTokenRepository.save(refreshToken);
+
+                return new TokenDTO(user.get().getEmail(), refreshTokenString, accessToken);
+            }
 
         } else {
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User or password incorrect");
         }
 
     }
@@ -152,6 +153,26 @@ public class AuthService {
         } else {
 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token");
+        }
+    }
+
+    public void reset(PasswordRecoveryDTO dto) {
+
+        String accessTokenString = dto.getAccessToken();
+
+        if (jwtHelper.validateAccessToken(accessTokenString)) {
+
+            Optional <User> user = userRepository.findByEmail(dto.getEmail());
+
+            user.get().setPassword(passwordEncoder.encode(dto.getPassword()));
+
+            userRepository.save(user.get());
+
+            log.info("user {} password reset with success", user.get().getEmail());
+
+        } else {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid access token");
         }
     }
 

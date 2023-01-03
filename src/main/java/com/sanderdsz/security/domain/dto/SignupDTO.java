@@ -1,4 +1,4 @@
-package com.sanderdsz.grocery.domain.dto;
+package com.sanderdsz.security.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenDTO {
+public class SignupDTO {
+
+    private String name;
 
     private String email;
 
-    private String refreshToken;
-
-    private String accessToken;
-
+    private String password;
 }

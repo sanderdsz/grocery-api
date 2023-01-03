@@ -1,7 +1,7 @@
-package com.sanderdsz.grocery.infrastructure.service;
+package com.sanderdsz.security.infrastructure.service;
 
-import com.sanderdsz.grocery.domain.model.User;
-import com.sanderdsz.grocery.domain.repository.UserRepository;
+import com.sanderdsz.security.domain.model.User;
+import com.sanderdsz.security.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -51,6 +51,22 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    public User recover(Long id, String password) {
+
+        Optional<User> userExists = userRepository.findById(id);
+
+        if (userExists.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+        }
+
+        userExists.get().setPassword(passwordEncoder.encode(password));
+
+        userExists.get().setUpdatedAt(LocalDateTime.now());
+
+        return userRepository.save(userExists.get());
+
     }
 
 }

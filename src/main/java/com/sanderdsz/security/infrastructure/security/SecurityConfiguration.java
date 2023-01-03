@@ -61,6 +61,7 @@ public class SecurityConfiguration {
                     auth.antMatchers("/auth/signup").permitAll();
                     auth.antMatchers("/auth/login").permitAll();
                     auth.antMatchers("/auth/logout").permitAll();
+                    auth.antMatchers("/auth/reset").permitAll();
                     auth.antMatchers("/auth/alive").authenticated();
                     auth.antMatchers("/recovery").permitAll();
                     auth.antMatchers("/users/me").authenticated();
