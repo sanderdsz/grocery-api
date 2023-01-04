@@ -11,7 +11,7 @@
 	<groupId>com.sanderdsz</groupId>
 	<artifactId>security</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>grocery</name>
+	<name>security</name>
 	<description>Security</description>
 	<properties>
 		<java.version>17</java.version>
