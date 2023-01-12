@@ -77,6 +77,8 @@ public class AuthService {
 
             String accessTokenString = jwtHelper.generateAccessToken(user);
 
+            log.info("User {} created", user.getEmail());
+
             return new TokenDTO(user.getEmail(), refreshTokenString, accessTokenString);
 
         } else {
@@ -93,11 +95,24 @@ public class AuthService {
      */
     public TokenDTO login(LoginDTO dto) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user;
 
-        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findTopByUser_IdOrderByCreatedAtDesc(user.get().getId());
+        Optional<RefreshToken> refreshTokenOptional;
+
+        try {
+
+            user = userRepository.findByEmail(dto.getEmail());
+
+            refreshTokenOptional = refreshTokenRepository.findTopByUser_IdOrderByCreatedAtDesc(user.get().getId());
+
+        } catch (Exception e) {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User or password incorrect");
+        }
 
         if (user.isPresent() && passwordEncoder.matches(dto.getPassword(), user.get().getPassword())) {
+
+            log.info("User {} logged in", user.get().getEmail());
 
             if (refreshTokenOptional.get().getExpiresDate().isAfter(LocalDateTime.now())) {
 
@@ -149,6 +164,8 @@ public class AuthService {
             Long userId = Long.parseLong(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
 
             refreshTokenRepository.deleteByUser_Id(userId);
+
+            log.info("User ID {} logged out", userId);
 
         } else {
 
