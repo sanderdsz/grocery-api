@@ -12,8 +12,13 @@ services:
       - '5432:5432'
     restart: always
   app:
-    build:
-      dockerfile: Dockerfile
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: ${DATABASE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DATABASE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD}
+      SPRING_MAIL_USERNAME: ${EMAIL_NAME}
+      SPRING_MAIL_PASSWORD: ${EMAIL_PASSWORD}
     container_name: spring-security
     expose:
       - 8080
